@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'dart:io';
+// import 'dart:io';
 
 // void main() {
 //   runApp(MyApp());
@@ -51,21 +51,30 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             TextFormField(
               controller: _nameController,
               decoration: InputDecoration(
-                  labelText: 'Full Name *',
-                  hintText: 'Школьная кличка',
-                  prefixIcon: Icon(Icons.person),
-                  suffixIcon: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                    borderSide: BorderSide(color: Colors.black, width: 2.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
-                  )),
+                labelText: 'Full Name *',
+                hintText: 'Школьная кличка',
+                prefixIcon: Icon(Icons.person),
+                suffixIcon: Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  borderSide: BorderSide(color: Colors.black, width: 2.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                ),
+              ),
               validator: _validateName,
             ),
             SizedBox(
@@ -92,10 +101,13 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   )),
               keyboardType: TextInputType.phone,
               inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
+                FilteringTextInputFormatter(RegExp(r'^[()\d -]{1,15}$'),
+                    allow: true),
+                // FilteringTextInputFormatter.digitsOnly,
               ],
-              validator: (val) => val!.isEmpty ? 'Name is required' : null,
-
+              validator: (value) => _validatePhoneNumber(value)
+                  ? null
+                  : 'Проверьте соответствие введенных данных (XXX)XXX-XXXX',
             ),
             SizedBox(
               height: 10.0,
@@ -108,6 +120,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 prefixIcon: Icon(Icons.mail),
               ),
               keyboardType: TextInputType.emailAddress,
+              validator: _validateEmail,
             ),
             SizedBox(
               height: 20.0,
@@ -146,6 +159,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
                 icon: Icon(Icons.security),
               ),
+              validator: _validaePassword,
             ),
             SizedBox(
               height: 10.0,
@@ -168,6 +182,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
                 icon: Icon(Icons.security),
               ),
+              validator: _validaePassword,
             ),
             SizedBox(
               height: 20.0,
@@ -185,22 +200,49 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   }
 
   void _submitForm() {
-    if(_formKey.currentState!.validate()){
-    print('Form is valid');
-
-    print('name user is ${_nameController.text}');
-    print('phone user is ${_phoneController.text}');
-    print('email user is ${_emailController.text}');
-    print('story user is ${_storyController.text}');
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      print('Form is valid');
+      print('name user is ${_nameController.text}');
+      print('phone user is ${_phoneController.text}');
+      print('email user is ${_emailController.text}');
+      print('story user is ${_storyController.text}');
+    } else {
+      print('Проверьте введенные данные');
     }
   }
 
-  String? _validateName(String value) {
+  String? _validateName(value) {
     final _nameExp = RegExp(r'^[A-Za-z ]+$');
-    if(value.isEmpty){
-      return 'Name is reqired.';
-    } else if(!_nameExp.hasMatch(value)){
-      return 'Please enter alphabetical characters.';
+    if (value.isEmpty) {
+      return 'Поле Name не может быть пустым.';
+    } else if (!_nameExp.hasMatch(value)) {
+      return 'Поле Name некорректно.';
+    } else {
+      return null;
+    }
+  }
+
+  bool _validatePhoneNumber(input) {
+    final _phoneExp = RegExp(r'^\(\d\d\d\)\d\d\d-\d\d\d\d$');
+    return _phoneExp.hasMatch(input);
+  }
+
+  String? _validateEmail(value) {
+    if (value.isEmpty) {
+      return 'Поле Email не может быть пустым.';
+    } else if (!_emailController.text.contains('@') || !_emailController.text.contains('.')) {
+      return 'Поле Email некорректно';
+    } else {
+      return null;
+    }
+  }
+
+  String? _validaePassword(value) {
+    if(_passController.text.length < 8) {
+      return 'Минимум 8 символов';
+    } else if(_confirmPassController.text != _passController.text) {
+      return 'Пароли не совпадают';
     } else {
       return null;
     }
