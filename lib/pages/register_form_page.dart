@@ -25,6 +25,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _passController = TextEditingController();
   final _confirmPassController = TextEditingController();
 
+  List<String> _countries = ['Ru', 'Uk', 'Ge', 'Fr'];
+  Object? _selectedCountry;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -33,6 +36,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _storyController.dispose();
     _passController.dispose();
     _confirmPassController.dispose();
+    
     super.dispose();
   }
 
@@ -54,8 +58,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 labelText: 'Full Name *',
                 hintText: 'Школьная кличка',
                 prefixIcon: Icon(Icons.person),
-                suffixIcon: Icon(
-                  Icons.delete_outline,
+                suffixIcon: IconButton(
+                  icon:
+                      Icon(Icons.delete_outline),
+                  onPressed: () {
+                    setState(() {
+                      _nameController.text = '';
+                    });
+                  },
                   color: Colors.red,
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -87,11 +97,25 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   hintText: 'Есть позвонить?',
                   helperText: 'Format: (XXX)XXX-XXXX',
                   prefixIcon: Icon(Icons.call),
-                  suffixIcon: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red,
-                  ),
+                  suffixIcon: IconButton(
+                  icon:
+                      Icon(Icons.delete_outline),
+                  onPressed: () {
+                    setState(() {
+                      _phoneController.text = '';
+                    });
+                  },
+                  color: Colors.red,
+                ),
                   enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    borderSide: BorderSide(color: Colors.black, width: 2.0),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                  ),
+                  errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     borderSide: BorderSide(color: Colors.black, width: 2.0),
                   ),
@@ -118,10 +142,48 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 labelText: 'Email Address *',
                 hintText: 'По IP вычислю!',
                 prefixIcon: Icon(Icons.mail),
+                suffixIcon: IconButton(
+                  icon:
+                      Icon(Icons.delete_outline),
+                  onPressed: () {
+                    setState(() {
+                      _emailController.text = '';
+                    });
+                  },
+                  color: Colors.red,
+                ),
+                
               ),
               keyboardType: TextInputType.emailAddress,
               validator: _validateEmail,
             ),
+            SizedBox(
+              height: 10.0,
+            ),
+
+            DropdownButtonFormField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                icon: Icon(Icons.map),
+                labelText: 'Country?',
+              ),
+              items: _countries.map((country){
+                return DropdownMenuItem(
+                  child: Text(country), 
+                  value:country,
+                  );
+              }).toList(), 
+              onChanged: (data) {
+                print(data);
+                setState(() {
+                  _selectedCountry = data;
+                });
+              },
+              value: _selectedCountry,
+              // validator: (val) {
+              //   return val == null ? 'Выбери страну' : null;
+              // },
+              ),
             SizedBox(
               height: 20.0,
             ),
@@ -132,6 +194,16 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 alignLabelWithHint: true,
                 hintText: 'Выкладывай...',
                 border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon:
+                      Icon(Icons.delete_outline),
+                  onPressed: () {
+                    setState(() {
+                      _storyController.text = '';
+                    });
+                  },
+                  color: Colors.red,
+                ),
               ),
               maxLines: 3,
               inputFormatters: [
