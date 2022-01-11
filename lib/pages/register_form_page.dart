@@ -12,11 +12,15 @@ class RegisterFormPage extends StatefulWidget {
   _RegisterFormPageState createState() => _RegisterFormPageState();
 }
 
+
+
 class _RegisterFormPageState extends State<RegisterFormPage> {
   bool _hidePass = true;
   bool _hidePassConf = true;
 
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
 
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -56,6 +60,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Register Form'),
         centerTitle: true,
@@ -293,7 +298,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       print('email user is ${_emailController.text}');
       print('story user is ${_storyController.text}');
     } else {
-      print('Проверьте введенные данные');
+      _showMessage(message: 'Проверьте введенные данные');
     }
   }
 
@@ -332,5 +337,22 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     } else {
       return null;
     }
+  }
+
+  void _showMessage({message}) {
+    _scaffoldKey.currentState!.showSnackBar(
+      SnackBar(
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.red,
+        content: Text(
+          message, 
+          style: TextStyle(
+            color: Colors.black, 
+            fontWeight: FontWeight.w600,
+            fontSize: 18.0
+          ),
+        )
+      ),
+    );
   }
 }
