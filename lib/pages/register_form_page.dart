@@ -28,6 +28,10 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   List<String> _countries = ['Ru', 'Uk', 'Ge', 'Fr'];
   Object? _selectedCountry;
 
+  final _nameFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _passFocus = FocusNode();
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -36,8 +40,17 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _storyController.dispose();
     _passController.dispose();
     _confirmPassController.dispose();
-    
+    _nameFocus.dispose();
+    _phoneFocus.dispose();
+    _passFocus.dispose();
+
     super.dispose();
+  }
+
+  void _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   @override
@@ -53,14 +66,18 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           padding: EdgeInsets.all(16.0),
           children: [
             TextFormField(
+              focusNode: _nameFocus,
+              autofocus: true,
+              onFieldSubmitted: (_){
+                _fieldFocusChange(context, _nameFocus, _phoneFocus);
+              },
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Full Name *',
                 hintText: 'Школьная кличка',
                 prefixIcon: Icon(Icons.person),
                 suffixIcon: IconButton(
-                  icon:
-                      Icon(Icons.delete_outline),
+                  icon: Icon(Icons.delete_outline),
                   onPressed: () {
                     setState(() {
                       _nameController.text = '';
@@ -91,6 +108,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               height: 10.0,
             ),
             TextFormField(
+              focusNode: _phoneFocus,
               controller: _phoneController,
               decoration: InputDecoration(
                   labelText: 'Phone Number *',
@@ -98,15 +116,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   helperText: 'Format: (XXX)XXX-XXXX',
                   prefixIcon: Icon(Icons.call),
                   suffixIcon: IconButton(
-                  icon:
-                      Icon(Icons.delete_outline),
-                  onPressed: () {
-                    setState(() {
-                      _phoneController.text = '';
-                    });
-                  },
-                  color: Colors.red,
-                ),
+                    icon: Icon(Icons.delete_outline),
+                    onPressed: () {
+                      setState(() {
+                        _phoneController.text = '';
+                      });
+                    },
+                    color: Colors.red,
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     borderSide: BorderSide(color: Colors.black, width: 2.0),
@@ -143,8 +160,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 hintText: 'По IP вычислю!',
                 prefixIcon: Icon(Icons.mail),
                 suffixIcon: IconButton(
-                  icon:
-                      Icon(Icons.delete_outline),
+                  icon: Icon(Icons.delete_outline),
                   onPressed: () {
                     setState(() {
                       _emailController.text = '';
@@ -152,7 +168,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   },
                   color: Colors.red,
                 ),
-                
               ),
               keyboardType: TextInputType.emailAddress,
               validator: _validateEmail,
@@ -160,19 +175,18 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             SizedBox(
               height: 10.0,
             ),
-
             DropdownButtonFormField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 icon: Icon(Icons.map),
                 labelText: 'Country?',
               ),
-              items: _countries.map((country){
+              items: _countries.map((country) {
                 return DropdownMenuItem(
-                  child: Text(country), 
-                  value:country,
-                  );
-              }).toList(), 
+                  child: Text(country),
+                  value: country,
+                );
+              }).toList(),
               onChanged: (data) {
                 print(data);
                 setState(() {
@@ -183,7 +197,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               // validator: (val) {
               //   return val == null ? 'Выбери страну' : null;
               // },
-              ),
+            ),
             SizedBox(
               height: 20.0,
             ),
@@ -195,8 +209,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 hintText: 'Выкладывай...',
                 border: OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon:
-                      Icon(Icons.delete_outline),
+                  icon: Icon(Icons.delete_outline),
                   onPressed: () {
                     setState(() {
                       _storyController.text = '';
@@ -303,7 +316,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   String? _validateEmail(value) {
     if (value.isEmpty) {
       return 'Поле Email не может быть пустым.';
-    } else if (!_emailController.text.contains('@') || !_emailController.text.contains('.')) {
+    } else if (!_emailController.text.contains('@') ||
+        !_emailController.text.contains('.')) {
       return 'Поле Email некорректно';
     } else {
       return null;
@@ -311,9 +325,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   }
 
   String? _validaePassword(value) {
-    if(_passController.text.length < 8) {
+    if (_passController.text.length < 8) {
       return 'Минимум 8 символов';
-    } else if(_confirmPassController.text != _passController.text) {
+    } else if (_confirmPassController.text != _passController.text) {
       return 'Пароли не совпадают';
     } else {
       return null;
