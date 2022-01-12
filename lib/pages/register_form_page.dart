@@ -373,7 +373,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text( 
+                  child: Text(  
                     'Закрыть',
                     style: TextStyle(
                       color: Colors.green,
