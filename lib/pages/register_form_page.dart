@@ -12,15 +12,12 @@ class RegisterFormPage extends StatefulWidget {
   _RegisterFormPageState createState() => _RegisterFormPageState();
 }
 
-
-
 class _RegisterFormPageState extends State<RegisterFormPage> {
   bool _hidePass = true;
   bool _hidePassConf = true;
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
 
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -73,7 +70,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             TextFormField(
               focusNode: _nameFocus,
               autofocus: true,
-              onFieldSubmitted: (_){
+              onFieldSubmitted: (_) {
                 _fieldFocusChange(context, _nameFocus, _phoneFocus);
               },
               controller: _nameController,
@@ -153,7 +150,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ],
               validator: (value) => _validatePhoneNumber(value)
                   ? null
-                  : 'Проверьте соответствие введенных данных (XXX)XXX-XXXX',
+                  : 'Проверьте соответствие (XXX)XXX-XXXX',
             ),
             SizedBox(
               height: 10.0,
@@ -292,7 +289,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      print('Form is valid');
+      _showDialog(name: _nameController.text);
+      // print('Form is valid');
       print('name user is ${_nameController.text}');
       print('phone user is ${_phoneController.text}');
       print('email user is ${_emailController.text}');
@@ -342,17 +340,48 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   void _showMessage({message}) {
     _scaffoldKey.currentState!.showSnackBar(
       SnackBar(
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.red,
-        content: Text(
-          message, 
-          style: TextStyle(
-            color: Colors.black, 
-            fontWeight: FontWeight.w600,
-            fontSize: 18.0
-          ),
-        )
-      ),
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.red,
+          content: Text(
+            message,
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                fontSize: 18.0),
+          )),
     );
+  }
+
+  void _showDialog({name}) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              'Регистрация прошла успешно.',
+              style: TextStyle(fontSize: 15.0, color: Colors.green),
+            ),
+            content: Text(
+              'Поздравляю!',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18.0,
+              ),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Закрыть',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 18.0,
+                    ),
+                  ))
+            ],
+          );
+        });
   }
 }
