@@ -117,14 +117,23 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   hintText: 'Есть позвонить?',
                   helperText: 'Format: (XXX)XXX-XXXX',
                   prefixIcon: Icon(Icons.call),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.delete_outline),
-                    onPressed: () {
-                      setState(() {
-                        _phoneController.text = '';
-                      });
-                    },
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      _phoneController.clear();
+                  },
+                  child: Icon(
+                    Icons.delete_outline,
                     color: Colors.red,
+                  ),
+                  
+                  //suffixIcon: IconButton(
+                  //   icon: Icon(Icons.delete_outline),
+                  //   onPressed: () {
+                  //     setState(() {
+                  //       _phoneController.text = '';
+                  //     });
+                  //   },
+                    // color: Colors.red,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
@@ -373,7 +382,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(  
+                  child: Text(
                     'Закрыть',
                     style: TextStyle(
                       color: Colors.green,
