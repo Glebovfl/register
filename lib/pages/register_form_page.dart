@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:register/model/user.dart';
+import 'package:register/pages/user_info_page.dart';
 
 // import 'dart:io';
 
@@ -32,6 +34,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _nameFocus = FocusNode();
   final _phoneFocus = FocusNode();
   final _passFocus = FocusNode();
+
+  User newUser = User();
 
   @override
   void dispose() {
@@ -105,6 +109,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
               ),
               validator: _validateName,
+              onSaved: (value) => newUser.name = value!,
             ),
             SizedBox(
               height: 10.0,
@@ -120,19 +125,19 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   suffixIcon: GestureDetector(
                     onTap: () {
                       _phoneController.clear();
-                  },
-                  child: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red,
-                  ),
-                  
-                  //suffixIcon: IconButton(
-                  //   icon: Icon(Icons.delete_outline),
-                  //   onPressed: () {
-                  //     setState(() {
-                  //       _phoneController.text = '';
-                  //     });
-                  //   },
+                    },
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: Colors.red,
+                    ),
+
+                    //suffixIcon: IconButton(
+                    //   icon: Icon(Icons.delete_outline),
+                    //   onPressed: () {
+                    //     setState(() {
+                    //       _phoneController.text = '';
+                    //     });
+                    //   },
                     // color: Colors.red,
                   ),
                   enabledBorder: OutlineInputBorder(
@@ -160,6 +165,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               validator: (value) => _validatePhoneNumber(value)
                   ? null
                   : 'Проверьте соответствие (XXX)XXX-XXXX',
+              onSaved: (value) => newUser.phone = value!,
             ),
             SizedBox(
               height: 10.0,
@@ -182,6 +188,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ),
               keyboardType: TextInputType.emailAddress,
               validator: _validateEmail,
+              onSaved: (value) => newUser.email = value!,
             ),
             SizedBox(
               height: 10.0,
@@ -198,10 +205,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   value: country,
                 );
               }).toList(),
-              onChanged: (data) {
-                print(data);
+              onChanged: (country) {
+                print(country);
                 setState(() {
-                  _selectedCountry = data;
+                  _selectedCountry = country;
+                  // newUser.country = country as String?;
                 });
               },
               value: _selectedCountry,
@@ -215,7 +223,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             TextFormField(
               controller: _storyController,
               decoration: InputDecoration(
-                labelText: 'True Story *',
+                labelText: 'True Story',
                 alignLabelWithHint: true,
                 hintText: 'Выкладывай...',
                 border: OutlineInputBorder(),
@@ -233,6 +241,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               inputFormatters: [
                 LengthLimitingTextInputFormatter(100),
               ],
+              onSaved: (value) => newUser.story = value!,
             ),
             SizedBox(
               height: 10.0,
@@ -381,6 +390,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               FlatButton(
                   onPressed: () {
                     Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserInfoPage(
+                          userInfo: newUser,
+                        ),
+                      ),
+                    );
                   },
                   child: Text(
                     'Закрыть',
